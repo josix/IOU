@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "IOU"
+version = "0.1.0"
+description = ""
+authors = ["Josix <wilson8507@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+fastapi = "^0.60.1"
+uvicorn = "^0.11.7"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
