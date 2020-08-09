@@ -23,12 +23,12 @@ repos:
         name: format
         language: system
         pass_filenames: false
-        entry: ./scripts/format
+        entry: ./scripts/format.sh
         types: [python]
 
       - id: linter and test
         name: linter and test
         language: system
         pass_filenames: false
-        entry: ./scripts/test
+        entry: ./scripts/test.sh
         types: [python]
