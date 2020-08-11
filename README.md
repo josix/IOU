@@ -1,16 +1,12 @@
 # IOU
-IOU means "How much $ I OWE YOU?"
+IOU means "How much $ I OWE(O) YOU(U)?"
 ## Prepare enviorment
 1. Install All Dependent Libraries
 ```bash
 poetry install
 ```
 2. Seeting Enviorment Variables
-```bash
-export CHANNEL_ACCESS_TOKEN=YOUR_CHANNEL_ACCESS_TOKEN
-export CHANNEL_SECRET=YOUR_CHANNEL_SECRET
-```
-or create a `.env` file with following content
+Create a `.env` file with following content
 ```
 CHANNEL_ACCESS_TOKEN=YOUR_CHANNEL_ACCESS_TOKEN
 CHANNEL_SECRET=YOUR_CHANNEL_SECRET
