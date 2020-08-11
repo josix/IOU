@@ -23,12 +23,12 @@ repos:
         name: format
         language: system
         pass_filenames: false
-        entry: ./scripts/format.sh
+        entry: ./pre-commit-hooks/format.sh
         types: [python]
 
       - id: linter and test
         name: linter and test
         language: system
         pass_filenames: false
-        entry: ./scripts/test.sh
+        entry: ./pre-commit-hooks/test.sh
         types: [python]
