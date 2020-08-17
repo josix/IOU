@@ -5,8 +5,8 @@ from pydantic import BaseModel
 
 class Message(BaseModel):
     id: str
-    type: Optional[str] = None
-    text: Optional[str] = None
+    type: str
+    text: str
 
 
 class MsgEvent(BaseModel):

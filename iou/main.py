@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Request
@@ -8,6 +9,8 @@ from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
 
+from .command import command_to_strategy
+from .config import USAGE, COMMAND_PATTERN
 from .types import MsgEvent
 
 load_dotenv()
@@ -36,5 +39,16 @@ async def callback(request: Request):
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event: MsgEvent):
     msg_text = event.message.text
-    if msg_text == "Add me":
-        line_bot_api.reply_message(event.reply_token, TextSendMessage(text=msg_text))
+    match_result = re.match(COMMAND_PATTERN, msg_text)
+    if (
+        match_result is not None
+        and match_result["prefix"]
+        and match_result["command"] is None
+    ):
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text=USAGE))
+    elif match_result is not None and match_result["prefix"]:
+        subcommand = match_result["command"].strip()
+        cmd = command_to_strategy[subcommand]
+        cmd.run(line_bot_api, event.reply_token)
+    else:
+        return "OK"
