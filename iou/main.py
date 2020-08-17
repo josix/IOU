@@ -7,7 +7,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.logger import logger
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
-from linebot.models import MessageEvent, TextMessage, TextSendMessage, JoinEvent
+from linebot.models import JoinEvent, MessageEvent, TextMessage, TextSendMessage
 
 from .command import command_to_strategy
 from .config import COMMAND_PATTERN, USAGE, WELCOME_MESSAGE
