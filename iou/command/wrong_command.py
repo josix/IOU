@@ -4,6 +4,7 @@ from linebot import LineBotApi
 from linebot.models import TextSendMessage
 
 from iou.config import WRONG_USAGE_RESPONSE
+
 from .command import CommandStrategy
 
 

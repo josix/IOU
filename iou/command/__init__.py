@@ -2,8 +2,8 @@ from collections import defaultdict
 from typing import Dict
 
 from .command import CommandContext
-from .wrong_command import WrongCmd
 from .join import Join
+from .wrong_command import WrongCmd
 
 command_to_strategy: Dict[str, CommandContext] = defaultdict(
     lambda: CommandContext(WrongCmd())

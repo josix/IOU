@@ -10,7 +10,7 @@ from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
 
 from .command import command_to_strategy
-from .config import USAGE, COMMAND_PATTERN
+from .config import COMMAND_PATTERN, USAGE
 from .types import MsgEvent
 
 load_dotenv()
