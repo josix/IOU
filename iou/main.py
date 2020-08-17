@@ -7,7 +7,12 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.logger import logger
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
-from linebot.models import JoinEvent, MessageEvent, TextMessage, TextSendMessage
+from linebot.models import (
+    JoinEvent,
+    MessageEvent,
+    TextMessage,
+    TextSendMessage,
+)
 
 from .command import command_to_strategy
 from .config import COMMAND_PATTERN, USAGE, WELCOME_MESSAGE
@@ -55,6 +60,8 @@ def handle_message(event: MsgEvent):
 
 
 @handler.add(JoinEvent)
-def handle_join(event):
+def handle_join(event: JoinEvent):
+    group_id = event.source.sender_id
+    logger.info(f"GroupId: {group_id}")
     line_bot_api.reply_message(event.reply_token, TextSendMessage(text=WELCOME_MESSAGE))
     return "OK"
