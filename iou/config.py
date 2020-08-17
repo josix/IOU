@@ -17,3 +17,4 @@ USAGE = (
 )
 
 WRONG_USAGE_RESPONSE = f"==WRONG USAGE==\n\n{USAGE}"
+WELCOME_MESSAGE = f"Hello 🌏! \n\n{USAGE}"
