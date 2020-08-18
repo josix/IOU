@@ -1,20 +1,35 @@
 import logging
 import os
+import re
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.logger import logger
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
-from linebot.models import MessageEvent, TextMessage, TextSendMessage
+from linebot.models import JoinEvent, MessageEvent, TextMessage, TextSendMessage
 
-from .types import MsgEvent
+from .command import command_to_strategy
+from .config import COMMAND_PATTERN, SUBCOMMANDS, USAGE, WELCOME_MESSAGE
+from .db import crud, models
+from .db.database import SessionLocal, engine
+from .db.schemas import GroupCreate
+from .line_api_models import MsgEvent
 
 load_dotenv()
 line_bot_api = LineBotApi(os.getenv("CHANNEL_ACCESS_TOKEN"))
 handler = WebhookHandler(os.getenv("CHANNEL_SECRET"))
 app = FastAPI()
+models.Base.metadata.create_all(bind=engine)
 logging.basicConfig(level=2, format="%(asctime)-15s %(levelname)-8s %(message)s")
+
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 
 @app.post("/callback")
@@ -35,6 +50,28 @@ async def callback(request: Request):
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event: MsgEvent):
-    msg_text = event.message.text
-    if msg_text == "Add me":
-        line_bot_api.reply_message(event.reply_token, TextSendMessage(text=msg_text))
+    msg_text = event.message.text.strip()
+    match_result = re.match(COMMAND_PATTERN, msg_text)
+    if (
+        match_result is not None
+        and match_result["prefix"]
+        and match_result["command"] is None
+    ):
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text=USAGE))
+    elif match_result is not None and match_result["prefix"]:
+        subcommand = match_result["command"].strip()
+        cmd = command_to_strategy[subcommand]
+        if subcommand not in SUBCOMMANDS:
+            cmd.run(event, line_bot_api)
+        else:
+            cmd.run(event, line_bot_api, db=SessionLocal())
+    else:
+        return "OK"
+
+
+@handler.add(JoinEvent)
+def handle_join_group(event: JoinEvent):
+    group_id: str = event.source.sender_id
+    logger.info(f"GroupId: {group_id}")
+    line_bot_api.reply_message(event.reply_token, TextSendMessage(text=WELCOME_MESSAGE))
+    return "OK"
