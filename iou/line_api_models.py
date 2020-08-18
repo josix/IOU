@@ -13,3 +13,16 @@ class MsgEvent(BaseModel):
     timestamp: int
     reply_token: str
     message: Message
+
+
+class Source(BaseModel):
+    sender_id: str
+    type: str
+
+
+class JoinEvent(BaseModel):
+    mode: str
+    type: str
+    reply_token: str
+    timestamp: int
+    source: Source
