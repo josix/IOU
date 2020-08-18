@@ -1,6 +1,16 @@
 from pydantic import BaseModel
 
 
+class Source(BaseModel):
+    sender_id: str
+    type: str
+
+
+class SourceGroup(Source):
+    user_id: str
+    group_id: str
+
+
 class Message(BaseModel):
     id: str
     type: str
@@ -12,12 +22,8 @@ class MsgEvent(BaseModel):
     type: str
     timestamp: int
     reply_token: str
+    source: SourceGroup
     message: Message
-
-
-class Source(BaseModel):
-    sender_id: str
-    type: str
 
 
 class JoinEvent(BaseModel):

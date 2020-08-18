@@ -1,12 +1,17 @@
 from abc import ABC, abstractmethod
-from typing import Callable
+from typing import Optional
 
 from linebot import LineBotApi
+from sqlalchemy.orm import Session
+
+from iou.line_api_models import MsgEvent
 
 
 class CommandStrategy(ABC):
     @abstractmethod
-    def run(self, line_bot_api: LineBotApi, reply_token: str):
+    def run(
+        self, event: MsgEvent, line_bot_api: LineBotApi, db: Optional[Session] = None
+    ):
         pass
 
 
@@ -22,5 +27,7 @@ class CommandContext:
     def command(self, command: CommandStrategy) -> None:
         self._command = command
 
-    def run(self, line_bot_api: LineBotApi, reply_token: str,) -> None:
-        self._command.run(line_bot_api=line_bot_api, reply_token=reply_token)
+    def run(
+        self, event: MsgEvent, line_bot_api: LineBotApi, db: Optional[Session] = None
+    ) -> None:
+        self._command.run(event, line_bot_api, db)

@@ -3,18 +3,17 @@ import os
 import re
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException, Request, Depends
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.logger import logger
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import JoinEvent, MessageEvent, TextMessage, TextSendMessage
 
-
-from .db import crud, models
-from .db.schemas import GroupCreate
-from .db.database import SessionLocal, engine
 from .command import command_to_strategy
-from .config import COMMAND_PATTERN, USAGE, WELCOME_MESSAGE
+from .config import COMMAND_PATTERN, SUBCOMMANDS, USAGE, WELCOME_MESSAGE
+from .db import crud, models
+from .db.database import SessionLocal, engine
+from .db.schemas import GroupCreate
 from .line_api_models import MsgEvent
 
 load_dotenv()
@@ -51,7 +50,7 @@ async def callback(request: Request):
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event: MsgEvent):
-    msg_text = event.message.text
+    msg_text = event.message.text.strip()
     match_result = re.match(COMMAND_PATTERN, msg_text)
     if (
         match_result is not None
@@ -62,7 +61,10 @@ def handle_message(event: MsgEvent):
     elif match_result is not None and match_result["prefix"]:
         subcommand = match_result["command"].strip()
         cmd = command_to_strategy[subcommand]
-        cmd.run(line_bot_api, event.reply_token)
+        if subcommand not in SUBCOMMANDS:
+            cmd.run(event, line_bot_api)
+        else:
+            cmd.run(event, line_bot_api, db=SessionLocal())
     else:
         return "OK"
 
